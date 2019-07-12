@@ -66,7 +66,7 @@ function spotifyres() {
         console.log("-------------------------------------\n")
         console.log("Artist: " + songitems.artists[0].name);
         console.log("Song Title: " + songitems.name);
-        console.log("Song Preview" + songitems.preview_url);
+        console.log("Song Preview: " + songitems.preview_url);
         console.log("Album: " + songitems.album.name);
         console.log("\n-------------------------------------")
 
@@ -127,7 +127,7 @@ function movieres() {
       console.log("Language: " + response.data.Language);
       console.log("Plot: " + response.data.Plot);
       console.log("Actors: " + response.data.Actors);
-      console.log("Rotten Tomatoes: " + response.data.Ratings[1].value);
+      // console.log("Rotten Tomatoes: " + response.data.Ratings[1].value);
       console.log("\n-------------------------------------");
 
 
@@ -152,8 +152,8 @@ function Dowhatitsays() {
     for (var i = 0; i < output.length; i++) {
       console.log(output[i]);
     }
-    var command1 = output[0];
-    var command2 = output[1];
+    // var command1 = output[0];
+    // var command2 = output[1];
 
   });
 
