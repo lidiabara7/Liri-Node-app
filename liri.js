@@ -6,54 +6,55 @@ var moment = require("moment");
 
 var keys = require("./keys.js");
 
-// var random = require("./random.txt")
-
 var fs = require("fs");
 
 var Spotify = require('node-spotify-api');
 
-var action = process.argv[2];
+var spotify = new Spotify({
+  id: process.env.SPOTIFY_ID,
+  secret: process.env.SPOTIFY_SECRET
+});
 
+let action = process.argv[2];
+let searchTerm = process.argv.slice(3).join(" ")
 // Need to create a switch-case statement to direct which function to run.
-var check = function () {
+function startApplication() {
   switch (action) {
 
     case "concert-this":
-      concertres();
+      getConcert();
       break;
 
-    case "spotify-this":
-      spotifyres();
+    case "spotify-this-song":
+      getSpotify();
       break;
 
     case "movie-this":
-      movieres();
+      getMovie();
       break;
 
     case "do-what-it-says":
-      Dowhatitsays();
+      doWhatItSays();
       break;
   }
-
 }
-check();
-
+startApplication();
 //============================================================================================
 // LIRI will search Spotify for songs 
 // need  * the artist * The song's name * A preview link of the song from Spotify
 // * The album. If no song is provided then your program will default to "The Sign" by Ace of Base
-function spotifyres() {
-  var spotify = new Spotify({
-    id: process.env.SPOTIFY_ID,
-    secret: process.env.SPOTIFY_SECRET
-  });
-  var song = process.argv.slice(3).join(" ");
+function getSpotify() {
+  console.log(action + searchTerm)
+  // var spotify = new Spotify({
+  //   id: process.env.SPOTIFY_ID,
+  //   secret: process.env.SPOTIFY_SECRET
+  // });
 
-  if (!song) {
-    song = "The Sign Ace of Base"
+  if (!searchTerm) {
+    searchTerm = "The Sign Ace of Base"
   }
 
-  spotify.search({ type: 'track', query: song, limit: 1 }, function (err, data) {
+  spotify.search({ type: 'track', query: searchTerm, limit: 1 }, function (err, data) {
     if (err) {
       return console.log('Error occurred: ' + err);
     }
@@ -81,12 +82,10 @@ function spotifyres() {
 // //function to get the concert info
 // // Name of the venue  * Venue location  * Date of the Event (use moment to format this as "MM/DD/YYYY")
 
-function concertres() {
-
-  var artist = process.argv.slice(3).join(" ");
+function getConcert() {
 
   axios
-    .get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp")
+    .get("https://rest.bandsintown.com/artists/" + searchTerm + "/events?app_id=codingbootcamp")
     .then(function (response) {
       // console.log(response);
       //need to create a variable for the date to be able to console.log it with the string "date"
@@ -103,20 +102,19 @@ function concertres() {
     })
 }
 
-// // ===================================================================================
-// // function to get the movie information
-// // need * Title. * Year the movie came out. * IMDB Rating. * Rotten Tomatoes Rating. * Country where it was produced. * Language. * Plot. * Actors. * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+//=============================================================================
+// function to get the movie information
+// need * Title. * Year the movie came out. * IMDB Rating. * Rotten Tomatoes Rating. * Country where it was produced. * Language. * Plot. * Actors. * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
 
-function movieres() {
-  var movie = process.argv.slice(3).join(" ");
+function getMovie() {
 
   //setting the difault if the user does not input a movie name
-  if (!movie) {
-    movie = "Mr. Nobody"
+  if (!searchTerm) {
+    searchTerm = "Mr. Nobody"
   }
 
   axios
-    .get("http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy")
+    .get("http://www.omdbapi.com/?t=" + searchTerm + "&y=&plot=short&apikey=trilogy")
     .then(function (response) {
       // console.log(response);
       console.log("-------------------------------------\n");
@@ -139,21 +137,23 @@ function movieres() {
 }
 
 // //==============================================================================
-// //function for do what it says
-// // * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-
-function Dowhatitsays() {
+// Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+function doWhatItSays() {
 
   fs.readFile('./random.txt', "utf8", function (error, data) {
     if (error) {
       return console.log(error);
     }
     var output = data.split(",");
-    for (var i = 0; i < output.length; i++) {
-      console.log(output[i]);
-    }
-    // var command1 = output[0];
-    // var command2 = output[1];
+    // []"hhh", "ffs"
+
+    action = output[0];
+    searchTerm = output[1];
+    console.log(action + searchTerm)
+    startApplication();
+    console.log(output);
+
+
 
   });
 
